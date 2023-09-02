@@ -11,7 +11,7 @@ from pyomo.opt import SolverFactory
 plt.figure()
 # variable definitions
 boundary_path = r"demo_boundary.csv"
-init_ref_path = r"refernce_right.csv"
+init_ref_path = r"refernce_left.csv"
 work_width = 6  # working width
 turn_radius = 7  # minimum turnning radius
 k_max = 0.120  # 1 / turn_radius  maximum steering curvature
@@ -19,9 +19,9 @@ ext_length = 10  # extended length of the reference side in boundary
 pt_num = 30  # the number of characteristic points of the generated cubic B-spline curve
 pic_num = 1000  # the number of characteristic points used to display the cubic B-spline curve
 p_dir = 'right'  # propagation direction
-gama = 0.8  # γ, adjustable value, the allowable deviation from the working width
+gama = 0.8  # γ, adjustable value, the allowable deviation from the working width; refernce_right:0.01;refernce_right:0.8
 mu = 0.01  # μ, adjustable value, the allowable deviation of offset direction from the normal direction
-straightness_cost_weight = 1  # W1
+straightness_cost_weight = 1 # W1; 1e2
 length_cost_weight = 1  # W2
 swath_width_cost_weight = 1  # W3
 
@@ -49,18 +49,6 @@ inner_boundary_xy = list(inner_boundary.coords)
 inner_boundary_x = [i[0] for i in inner_boundary_xy]
 inner_boundary_y = [i[1] for i in inner_boundary_xy]
 plt.plot(inner_boundary_x, inner_boundary_y, 'k')
-
-# csv_matrix = []
-# csv_table_headers = ['x', 'y']
-# csv_matrix.append(csv_table_headers)
-# for i in range(len(inner_boundary_x)):
-#     csv_row = [inner_boundary_x[i], inner_boundary_y[i]]
-#     csv_matrix.append(csv_row)
-# for i in range(len(csv_matrix)):
-#     f = open(r"inner_boundary.csv", 'a', newline='')
-#     writer = csv.writer(f)
-#     writer.writerow(csv_matrix[i])
-#     f.close()
 
 # 2）obtaining reference line from csv
 init_ref_xy = []
@@ -154,10 +142,10 @@ for id in range(100):
     model.swath_width_y_lower = pyo.ConstraintList()
     model.swath_width_y_upper = pyo.ConstraintList()
     for i in range(Ng):
-        # model.swath_width_x_lower.add(expr=(x[i] - ref_x[i]) / ref_e_x[i] >= (1 - gama_l) * offset_dis)
-        # model.swath_width_x_upper.add(expr=(x[i] - ref_x[i]) / ref_e_x[i] <= (1 + gama_u) * offset_dis)
-        # model.swath_width_y_lower.add(expr=(y[i] - ref_y[i]) / ref_e_y[i] >= (1 - gama_l) * offset_dis)
-        # model.swath_width_y_upper.add(expr=(y[i] - ref_y[i]) / ref_e_y[i] <= (1 + gama_u) * offset_dis)
+        # model.swath_width_x_lower.add(expr=(x[i] - ref_x[i]) / ref_e_x[i] >= (1 - gama) * offset_dis)
+        # model.swath_width_x_upper.add(expr=(x[i] - ref_x[i]) / ref_e_x[i] <= (1 + gama) * offset_dis)
+        # model.swath_width_y_lower.add(expr=(y[i] - ref_y[i]) / ref_e_y[i] >= (1 - gama) * offset_dis)
+        # model.swath_width_y_upper.add(expr=(y[i] - ref_y[i]) / ref_e_y[i] <= (1 + gama) * offset_dis)
         lx = ref_x[i] + min(((1 - gama) * offset_dis) * ref_e_x[i], ((1 + gama) * offset_dis) * ref_e_x[i])
         ux = ref_x[i] + max(((1 - gama) * offset_dis) * ref_e_x[i], ((1 + gama) * offset_dis) * ref_e_x[i])
 
@@ -281,8 +269,8 @@ plt.axis('equal')
 plt.show()
 
 plt.figure()
-plt.plot(init_u, [0] * 30)
-plt.plot(init_u, offset_angle_diff[0], 'o')
+plt.plot(init_u, [0] * 30,'k-')
+plt.plot(init_u, offset_angle_diff[11], 'bo')
 # plt.axis('equal')
-# plt.ylim([-0.01, 0.01])
+plt.ylim([-0.01, 0.01])
 plt.show()
